@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "broccoli-plugin": "^1.2.1",
-    "node-elm-compiler": "^2.0.0",
+    "lodash": "^3.10.1",
     "rsvp": "^3.1.0"
   },
   "devDependencies": {
