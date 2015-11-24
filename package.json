@@ -2,7 +2,7 @@
   "name": "broccoli-elm",
   "description": "A Broccoli plugin for Elm",
   "version": "0.0.1",
-  "author": "Philipp Markovics <philipp@markovics.com>",
+  "author": "Philipp Markovics <philipp@markovics.com>, Dieter Komendera <dieter@komendera.com>",
   "main": "index.js",
   "license": "MIT",
   "repository": {
