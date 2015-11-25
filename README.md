@@ -19,7 +19,8 @@ var outputNode = new BroccoliElm("directory/containing/elm-files", {
 
 ## Options
 
-```{
+```js
+{
   annotation:  undefined, // String: annotate the broccoli-elm plugin instance
   pathToMake:  "elm-make", // String: alternative path to elm-make
   destination: "/elm.js", // String: name your elm JS bundle,
