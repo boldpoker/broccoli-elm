@@ -6,18 +6,17 @@ var Plugin = require('broccoli-plugin');
 var childProcess = require('child_process');
 var compilerBinaryName = "elm-make";
 
+var defaultCompilerArgs = {
+  yes:  undefined,
+  help: undefined
+};
+var supportedCompilerArgs = _.keys(defaultCompilerArgs);
 var defaultOptions = {
-  warn:       console.warn,
-  pathToMake: undefined,
-  yes:        undefined,
-  help:       undefined,
-  output:     undefined,
-  verbose:    false
+  annotation: undefined,
+  pathToMake: undefined
 };
 
-var supportedOptions = _.keys(defaultOptions);
-
-function compile(sources, options) {
+function compile(sources, flags, options) {
   if (typeof sources === "string") {
     sources = [sources];
   }
@@ -26,11 +25,8 @@ function compile(sources, options) {
     throw "compile() received neither an Array nor a String for its sources argument."
   }
 
-  options = _.defaults({}, options, defaultOptions);
-
-  var compilerArgs = compilerArgsFromOptions(options, options.warn);
-  var processArgs  = sources ? sources.concat(compilerArgs) : compilerArgs;
-  var env = _.merge({LANG: 'en_US.UTF-8'}, process.env);
+  var processArgs  = sources ? sources.concat(flags) : flags;
+  var env = _.merge({ LANG: 'en_US.UTF-8' }, process.env);
   var processOpts = { env: env, stdio: [process.stdin, "ignore", process.stderr] };
   var pathToMake = options.pathToMake || compilerBinaryName;
   var verbose = options.verbose;
@@ -71,20 +67,17 @@ function escapePath(pathStr) {
   return pathStr.replace(/ /g, "\\ ");
 }
 
-// Converts an object of key/value pairs to an array of arguments suitable
-// to be passed to child_process.spawn for elm-make.
-function compilerArgsFromOptions(options, logWarning) {
-  return _.flatten(_.map(options, function(value, opt) {
+function compilerArgsToFlags(compilerArgs) {
+  return _.flatten(_.map(compilerArgs, function(value, arg) {
     if (value) {
-      switch(opt) {
+      switch(arg) {
         case "yes":    return ["--yes"];
         case "help":   return ["--help"];
         case "output": return ["--output", escapePath(value)];
         default:
-          if (supportedOptions.indexOf(opt) === -1) {
-            logWarning('Unknown Elm compiler option: ' + opt);
+          if (supportedCompilerArgs.indexOf(arg) === -1) {
+            console.warn('Unknown Elm compiler option: ' + arg);
           }
-
           return [];
       }
     } else {
@@ -92,23 +85,22 @@ function compilerArgsFromOptions(options, logWarning) {
     }
   }));
 }
-
-module.exports = ElmPlugin;
 ElmPlugin.prototype = Object.create(Plugin.prototype);
 ElmPlugin.prototype.constructor = ElmPlugin;
 
 function ElmPlugin (inputNode, options) {
-  options = options || {};
+  this.options = _.defaults({}, options, defaultOptions);
+  this.compilerArgs = _.defaults({}, this.options.compilerArgs, defaultCompilerArgs);
   Plugin.call(this, [inputNode], {
-    annotation: options.annotation
+    annotation: this.options.annotation
   });
 }
 
 ElmPlugin.prototype.build = function() {
   var promise = new rsvp.Promise(function(resolvePromise, rejectPromise) {
-    compile(this.inputPaths, {
-      output: this.outputPath + "/elm.js"
-    }).on("close", function(exitCode) {
+    this.compilerArgs.output = this.outputPath + "/elm.js";
+    var flags = compilerArgsToFlags(this.compilerArgs);
+    compile(this.inputPaths, flags, this.options).on("close", function(exitCode) {
       if (exitCode === 0) {
         resolvePromise();
       } else {
@@ -118,3 +110,5 @@ ElmPlugin.prototype.build = function() {
   }.bind(this));
   return promise;
 };
+
+module.exports = ElmPlugin;
