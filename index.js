@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var fs = require('fs');
 var rsvp = require('rsvp');
 var Plugin = require('broccoli-plugin');
 var childProcess = require('child_process');
@@ -98,9 +99,19 @@ function ElmPlugin (inputNode, options) {
 
 ElmPlugin.prototype.build = function() {
   var promise = new rsvp.Promise(function(resolvePromise, rejectPromise) {
+    var elmFiles = [];
+    this.inputPaths.forEach(function(inputPath) {
+      var files = fs.readdirSync(inputPath);
+      files.forEach(function(file) {
+        var ext = file.split('.').pop();
+        if (ext == "elm") {
+          elmFiles.push(inputPath + "/" + file);
+        }
+      });
+    });
     this.compilerArgs.output = this.outputPath + "/elm.js";
     var flags = compilerArgsToFlags(this.compilerArgs);
-    compile(this.inputPaths, flags, this.options).on("close", function(exitCode) {
+    compile(elmFiles, flags, this.options).on("close", function(exitCode) {
       if (exitCode === 0) {
         resolvePromise();
       } else {

@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe('broccoli-elm', function() {
   it('compiles .elm files', function() {
-    var inputNode = "fixtures/broccoli-elm-test.elm";
+    var inputNode = "fixtures";
     var outputNode = new BroccoliElm(inputNode);
     return Fixture.build(outputNode).then(function(outputFixture) {
       return expect(outputFixture)
