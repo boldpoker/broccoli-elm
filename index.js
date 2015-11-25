@@ -13,8 +13,9 @@ var defaultCompilerArgs = {
 };
 var supportedCompilerArgs = _.keys(defaultCompilerArgs);
 var defaultOptions = {
-  annotation: undefined,
-  pathToMake: undefined
+  annotation:  undefined,
+  pathToMake:  undefined,
+  destination: "/elm.js"
 };
 
 function compile(sources, flags, options) {
@@ -109,7 +110,7 @@ ElmPlugin.prototype.build = function() {
         }
       });
     });
-    this.compilerArgs.output = this.outputPath + "/elm.js";
+    this.compilerArgs.output = this.outputPath + "/" + this.options.destination;
     var flags = compilerArgsToFlags(this.compilerArgs);
     compile(elmFiles, flags, this.options).on("close", function(exitCode) {
       if (exitCode === 0) {
