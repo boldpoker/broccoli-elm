@@ -1,7 +1,7 @@
 {
   "name": "broccoli-elm",
   "description": "A Broccoli plugin for Elm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Philipp Markovics <philipp@markovics.com>, Dieter Komendera <dieter@komendera.com>",
   "main": "index.js",
   "license": "BSD3",
