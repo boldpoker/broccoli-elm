@@ -8,7 +8,7 @@ var childProcess = require('child_process');
 var compilerBinaryName = "elm-make";
 
 var defaultCompilerArgs = {
-  yes:  undefined,
+  yes:  true,
   help: undefined
 };
 var supportedCompilerArgs = _.keys(defaultCompilerArgs);
