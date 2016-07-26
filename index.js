@@ -14,6 +14,7 @@ var defaultCompilerArgs = {
 var supportedCompilerArgs = _.keys(defaultCompilerArgs);
 var defaultOptions = {
   annotation:  undefined,
+  cwd: undefined,
   pathToMake:  undefined,
   destination: "/elm.js"
 };
@@ -29,7 +30,7 @@ function compile(sources, flags, options) {
 
   var processArgs  = sources ? sources.concat(flags) : flags;
   var env = _.merge({ LANG: 'en_US.UTF-8' }, process.env);
-  var processOpts = { env: env, stdio: ["ignore", "ignore", process.stderr] };
+  var processOpts = { env: env, stdio: ["ignore", "ignore", process.stderr], cwd: options.cwd };
   var pathToMake = options.pathToMake || compilerBinaryName;
   var verbose = options.verbose;
 
