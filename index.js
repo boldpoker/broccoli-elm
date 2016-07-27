@@ -14,6 +14,7 @@ var defaultCompilerArgs = {
 var supportedCompilerArgs = _.keys(defaultCompilerArgs);
 var defaultOptions = {
   annotation:  undefined,
+  cwd: undefined,
   pathToMake:  undefined,
   destination: "/elm.js"
 };
@@ -24,12 +25,12 @@ function compile(sources, flags, options) {
   }
 
   if (!(sources instanceof Array)) {
-    throw "compile() received neither an Array nor a String for its sources argument."
+    throw "compile() received neither an Array nor a String for its sources argument.";
   }
 
   var processArgs  = sources ? sources.concat(flags) : flags;
   var env = _.merge({ LANG: 'en_US.UTF-8' }, process.env);
-  var processOpts = { env: env, stdio: ["ignore", "ignore", process.stderr] };
+  var processOpts = { env: env, stdio: ["ignore", "ignore", process.stderr], cwd: options.cwd };
   var pathToMake = options.pathToMake || compilerBinaryName;
   var verbose = options.verbose;
 
@@ -42,7 +43,7 @@ function compile(sources, flags, options) {
       .on('error', function(err) {
         handleError(pathToMake, err);
 
-        process.exit(1)
+        process.exit(1);
       });
   } catch (err) {
     if ((typeof err === "object") && (typeof err.code === "string")) {
@@ -51,13 +52,13 @@ function compile(sources, flags, options) {
       console.error("Exception thrown when attempting to run Elm compiler " + JSON.stringify(pathToMake) + ":\n" + err);
     }
 
-    process.exit(1)
+    process.exit(1);
   }
 }
 
 function handleError(pathToMake, err) {
   if (err.code === "ENOENT") {
-    console.error("Could not find Elm compiler \"" + pathToMake + "\". Is it installed?")
+    console.error("Could not find Elm compiler \"" + pathToMake + "\". Is it installed?");
   } else if (err.code === "EACCES") {
     console.error("Elm compiler \"" + pathToMake + "\" did not have permission to run. Do you need to give it executable permissions?");
   } else {
